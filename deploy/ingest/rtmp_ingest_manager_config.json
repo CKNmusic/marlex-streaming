@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "server": {
+    "public_host": "192.168.10.19",
+    "rtmp_port": 8554,
+    "app_prefix": "surgwaze/v1",
+    "stream_name": "stream",
+    "query_key_param": "key",
+    "api_host": "127.0.0.1",
+    "api_port": 9997,
+    "api_user": "api",
+    "api_pass": "api"
+  },
+  "runtime": {
+    "external_server": true,
+    "container_name": "mediamtx_rtmp_receiver_test",
+    "image": "bluenviron/mediamtx:latest",
+    "rtsp_port_internal": 8556,
+    "poll_interval_sec": 0.5,
+    "autostart_recording": false,
+    "max_concurrent_recordings": 64,
+    "keep_container": false,
+    "log_level": "info"
+  },
+  "scaling": {
+    "process_model": "worker_pid_per_stream",
+    "publisher_discovery": "mediamtx_api_rtmpconns_list",
+    "notes": "Cada stream gravando roda em um processo FFmpeg isolado."
+  },
+  "recording": {
+    "user_id": 1,
+    "ffmpeg_bin": "ffmpeg",
+    "format": "matroska"
+  },
+  "storage": {
+    "output_dir": "recordings/rtmp_ingest_manager",
+    "runtime_dir": ".runtime/rtmp_ingest_manager",
+    "status_file": ".runtime/rtmp_ingest_manager/receiver_status.json",
+    "seq_file": ".runtime/rtmp_ingest_manager/sequence_db.json",
+    "history_file": ".runtime/rtmp_ingest_manager/recording_history.json",
+    "mediamtx_config_file": ".runtime/rtmp_ingest_manager/mediamtx.yml"
+  },
+  "routing_notes": {
+    "recommended_primary_style": "rtmp://<host>:8554/surgwaze/v1/<device_key>/stream",
+    "legacy_query_style": "rtmp://<host>:8554/surgwaze/v1/stream?key=<device_key>",
+    "important": "No MediaMTX, cada path aceita 1 publisher simultaneo; para escala, use key no path."
+  },
+  "lifecycle_status": [
+    "Offline",
+    "Online",
+    "Starting",
+    "Recording",
+    "Stopping"
+  ]
+}

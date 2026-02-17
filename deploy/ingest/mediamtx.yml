@@ -1,0 +1,50 @@
+logLevel: info
+
+api: yes
+apiAddress: :9997
+
+# Keep ingest minimal: only protocols currently supported by business rules.
+rtsp: no
+webrtc: yes
+hls: yes
+rtmp: yes
+srt: yes
+
+rtmpAddress: :8554
+readTimeout: 60s
+writeTimeout: 60s
+
+srtAddress: :9000
+
+webrtcAddress: :8889
+webrtcLocalUDPAddress: :8189
+webrtcAdditionalHosts:
+  - 179.127.151.102
+
+# Increase write queue to avoid "max recorded size exceeded" for high-bitrate SRT readers.
+# Default is 512; 4K streams may need more buffering.
+writeQueueSize: 2048
+
+authMethod: http
+authHTTPAddress: http://host.docker.internal:8001/surgwaze/v1/device-auth/ingest-auth
+authHTTPExclude:
+  - action: api
+
+pathDefaults:
+  # Recording is handled by the application pipeline (ffmpeg + business rules).
+  # Keep MediaMTX only as ingest/auth gateway to avoid recorder noise and duplication.
+  record: no
+
+authInternalUsers:
+  - user: any
+    permissions:
+      - action: publish
+      - action: read
+      - action: playback
+  - user: api
+    pass: api
+    permissions:
+      - action: api
+
+paths:
+  all:

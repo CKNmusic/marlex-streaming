@@ -1,0 +1,64 @@
+# ============================================
+# Ignore EVERYTHING by default, then whitelist
+# ============================================
+*
+
+# ---- Whitelist: Root project files ----
+!.gitignore
+!README.md
+!LICENSE
+!docker-compose.yml
+!docker-compose.ingest.yml
+!docker-compose.realtime.yml
+!requirements.txt
+!pytest.ini
+!.env.example
+
+# ---- Whitelist: Backend (app/) ----
+!app/
+!app/**
+
+# ---- Whitelist: Frontend (web/) ----
+!web/
+!web/src/
+!web/src/**
+!web/public/
+!web/public/**
+!web/index.html
+!web/package.json
+!web/package-lock.json
+!web/vite.config.ts
+!web/tsconfig.json
+!web/tsconfig.app.json
+!web/tailwind.config.js
+!web/postcss.config.js
+!web/eslint.config.js
+!web/.env.example
+!web/.npmrc
+!web/.gitignore
+!web/README.md
+
+# ---- Whitelist: Deploy config ----
+!deploy/
+!deploy/**
+
+# ---- Whitelist: Scripts ----
+!scripts/
+!scripts/**
+
+# ---- Whitelist: Assets ----
+!assets/
+!assets/**
+
+# ---- Ignore within whitelisted dirs ----
+__pycache__/
+*.py[cod]
+node_modules/
+web/dist/
+web/node_modules/
+*.log
+.runtime/
+recordings/
+.env
+!.env.example
+!web/.env.example

@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: streaming_db
+    restart: always
+    command: [ "postgres", "-c", "log_checkpoints=off", "-c", "timezone=America/Sao_Paulo", "-c", "log_timezone=America/Sao_Paulo" ]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-streaming_app}
+      TZ: ${TZ:-America/Sao_Paulo}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+  adminer:
+    image: adminer
+    container_name: streaming_adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+      TZ: ${TZ:-America/Sao_Paulo}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+  ingest:
+    build:
+      context: .
+      dockerfile: deploy/ingest/Dockerfile
+    image: streaming_ingest_local:latest
+    container_name: streaming_ingest
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      APP_NAME: ${APP_NAME:-surgwaze}
+      APP_VERSION: ${APP_VERSION:-v1}
+      MEDIAMTX_CONFIG: /mediamtx.yml
+      TZ: ${TZ:-America/Sao_Paulo}
+    ports:
+      - "${INGEST_RTMP_PORT:-8554}:8554"
+      - "${INGEST_SRT_PORT:-9000}:9000/udp"
+      - "${INGEST_API_PORT:-9997}:9997"
+    volumes:
+      - ./deploy/ingest/mediamtx.yml:/mediamtx.yml:ro
+      - ./recordings/ingest:/recordings
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+volumes:
+  postgres_data:
